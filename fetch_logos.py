@@ -4,20 +4,19 @@ import urllib.parse
 import os
 import re
 import sys
+import time
 
 sys.stdout.reconfigure(encoding='utf-8')
-# We will read data.js, extract the TEAMS array via regex
+
 with open('data.js', 'r', encoding='utf-8') as f:
     content = f.read()
 
-# Extract TEAMS array
 match = re.search(r'const TEAMS = \[(.*?)\];', content, re.DOTALL)
 if not match:
     print("Failed to find TEAMS array")
     exit(1)
 
 teams_str = match.group(1)
-# Crude regex to extract id and name/engName
 teams = []
 for line in teams_str.split('\n'):
     if '{' in line:
@@ -33,10 +32,8 @@ for line in teams_str.split('\n'):
 
 os.makedirs('img/logos', exist_ok=True)
 
-def fetch_wiki_logo(team_name, fallback_name, team_id):
-    # Try Korean wiki first
-    url = f"https://ko.wikipedia.org/w/api.php?action=query&titles={urllib.parse.quote(team_name + ' FC')}&prop=pageimages&format=json&pithumbsize=300"
-    
+def fetch_image_from_title(title, team_id, lang='en'):
+    url = f"https://{lang}.wikipedia.org/w/api.php?action=query&titles={urllib.parse.quote(title)}&prop=pageimages&format=json&pithumbsize=300"
     try:
         req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as response:
@@ -45,43 +42,54 @@ def fetch_wiki_logo(team_name, fallback_name, team_id):
             page_id = list(pages.keys())[0]
             if page_id != '-1' and 'thumbnail' in pages[page_id]:
                 img_url = pages[page_id]['thumbnail']['source']
-                # Download
-                ext = img_url.split('.')[-1]
-                if ext not in ['png', 'svg', 'jpg', 'jpeg']: ext = 'png'
                 out_path = f"img/logos/{team_id}.png"
                 req_img = urllib.request.Request(img_url, headers={'User-Agent': 'Mozilla/5.0'})
                 with urllib.request.urlopen(req_img) as img_resp:
                     with open(out_path, 'wb') as img_f:
                         img_f.write(img_resp.read())
-                print(f"Downloaded {team_name} (ko)")
                 return True
     except Exception as e:
         pass
+    return False
 
-    # Try English wiki
-    url_en = f"https://en.wikipedia.org/w/api.php?action=query&titles={urllib.parse.quote(fallback_name)}&prop=pageimages&format=json&pithumbsize=300"
+def search_wiki_and_download(search_term, team_id, lang='en'):
+    search_url = f"https://{lang}.wikipedia.org/w/api.php?action=query&list=search&srsearch={urllib.parse.quote(search_term)}&utf8=&format=json"
     try:
-        req = urllib.request.Request(url_en, headers={'User-Agent': 'Mozilla/5.0'})
+        req = urllib.request.Request(search_url, headers={'User-Agent': 'Mozilla/5.0'})
         with urllib.request.urlopen(req) as response:
             data = json.loads(response.read().decode())
-            pages = data['query']['pages']
-            page_id = list(pages.keys())[0]
-            if page_id != '-1' and 'thumbnail' in pages[page_id]:
-                img_url = pages[page_id]['thumbnail']['source']
-                out_path = f"img/logos/{team_id}.png"
-                req_img = urllib.request.Request(img_url, headers={'User-Agent': 'Mozilla/5.0'})
-                with urllib.request.urlopen(req_img) as img_resp:
-                    with open(out_path, 'wb') as img_f:
-                        img_f.write(img_resp.read())
-                print(f"Downloaded {fallback_name} (en)")
-                return True
+            search_results = data['query']['search']
+            if len(search_results) > 0:
+                exact_title = search_results[0]['title']
+                return fetch_image_from_title(exact_title, team_id, lang)
     except Exception as e:
         pass
-
-    print(f"Failed to find logo for {team_name} / {fallback_name}")
     return False
 
 for t in teams:
-    fetch_wiki_logo(t['name'], t['engName'], t['id'])
+    team_id = t['id']
+    # Skip if already exists
+    if os.path.exists(f"img/logos/{team_id}.png"):
+        continue
+
+    # Try English exact search
+    if search_wiki_and_download(t['engName'] + " football club", team_id, 'en'):
+        print(f"Downloaded {t['engName']} (en sr)")
+        time.sleep(0.5)
+        continue
+
+    # Try Korean exact search
+    if search_wiki_and_download(t['name'] + " FC", team_id, 'ko'):
+        print(f"Downloaded {t['name']} (ko sr)")
+        time.sleep(0.5)
+        continue
     
-print("Done scraping.")
+    # Try generic English search
+    if search_wiki_and_download(t['engName'], team_id, 'en'):
+        print(f"Downloaded {t['engName']} (en fallback)")
+        time.sleep(0.5)
+        continue
+
+    print(f"Failed to find logo for {t['name']} / {t['engName']}")
+
+print("Done scraping newly missing logos.")

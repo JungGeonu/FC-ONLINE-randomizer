@@ -257,19 +257,21 @@ function createCard(team, league, idx) {
 }
 
 // ── Squad Modal ─────────────────────────────────
-const FORMATION_4231 = [
-  { pos: 'ST', x: 50, y: 15 },
-  { pos: 'LAM', x: 25, y: 30 },
-  { pos: 'CAM', x: 50, y: 35 },
-  { pos: 'RAM', x: 75, y: 30 },
-  { pos: 'LDM', x: 35, y: 55 },
-  { pos: 'RDM', x: 65, y: 55 },
-  { pos: 'LB', x: 15, y: 75 },
-  { pos: 'LCB', x: 35, y: 80 },
-  { pos: 'RCB', x: 65, y: 80 },
-  { pos: 'RB', x: 85, y: 75 },
-  { pos: 'GK', x: 50, y: 92 },
-];
+
+const POS_COORDS = {
+  'ST': {x: 50, y: 15}, 'LS': {x: 35, y: 15}, 'RS': {x: 65, y: 15},
+  'LAM': {x: 25, y: 30}, 'CAM': {x: 50, y: 35}, 'RAM': {x: 75, y: 30},
+  'LW': {x: 20, y: 25}, 'RW': {x: 80, y: 25},
+  'LM': {x: 20, y: 45}, 'CM': {x: 50, y: 45}, 'RM': {x: 80, y: 45},
+  'LDM': {x: 35, y: 56}, 'RDM': {x: 65, y: 56}, 'CDM': {x: 50, y: 56},
+  'LWB': {x: 10, y: 65}, 'RWB': {x: 90, y: 65},
+  'LB': {x: 15, y: 76}, 'LCB': {x: 35, y: 80}, 'CB': {x: 50, y: 80}, 'RCB': {x: 65, y: 80}, 'RB': {x: 85, y: 76},
+  'GK': {x: 50, y: 92}
+};
+
+function getPosXY(pos) {
+  return POS_COORDS[pos] || {x: 50, y: 50};
+}
 
 function openSquadModal(team) {
   modalTeamName.textContent = team.name;
@@ -300,20 +302,33 @@ function closeSquadModal() {
 
 function renderFormation(team) {
   pitchContainer.innerHTML = '';
-  FORMATION_4231.forEach(p => {
+  const squad = typeof generateSquad === 'function' ? generateSquad(team) : [];
+  
+  squad.forEach(p => {
+    const coords = getPosXY(p.pos);
     const node = document.createElement('div');
     node.className = 'player-node';
-    node.style.left = `${p.x}%`;
-    node.style.top = `${p.y}%`;
+    node.style.left = `${coords.x}%`;
+    node.style.top = `${coords.y}%`;
     
-    // Check if keeper
     const isGk = p.pos === 'GK';
     const bg = isGk ? '#ffeb3b' : team.primary;
     const border = isGk ? '#f57f17' : (team.secondary === '#FFFFFF' ? '#e0e0e0' : team.secondary);
 
     node.innerHTML = `
-      <div class="player-dot" style="background:${bg}; border-color:${border};"></div>
-      <div class="player-pos">${p.pos}</div>
+      <div class="player-pos-tag">${p.pos}</div>
+      <div class="player-card" style="border-color:${border};">
+        <div class="pcard-ovr">${p.ovr}</div>
+        <div class="pcard-season">${p.season}</div>
+        <div class="pcard-mipe">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMax meet">
+            <path d="M50 20 C35 20 25 35 30 50 C32 56 38 62 50 62 C62 62 68 56 70 50 C75 35 65 20 50 20 Z" fill="#e0e0e0"/>
+            <path d="M15 100 C15 75 30 65 50 65 C70 65 85 75 85 100 Z" fill="${bg}"/>
+          </svg>
+        </div>
+        <div class="pcard-enhance enhance-${p.enhance}">+${p.enhance}</div>
+        <div class="pcard-name">${p.name}</div>
+      </div>
     `;
     pitchContainer.appendChild(node);
   });
