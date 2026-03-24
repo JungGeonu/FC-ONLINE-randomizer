@@ -120,6 +120,26 @@
     <p>FC Online 팀 랜덤 생성기 &nbsp;·&nbsp; 직접 만든 비공식 도구</p>
   </footer>
 
+  <!-- Squad Modal -->
+  <div class="modal-overlay" id="squadModal">
+    <div class="modal-content">
+      <button class="modal-close" id="modalClose">✕</button>
+      <div class="modal-header">
+        <div class="modal-logo-wrap">
+          <img src="" alt="Team Logo" id="modalLogo" style="display:none;" />
+          <span id="modalEmblem" style="font-size:3rem;display:none;"></span>
+        </div>
+        <div class="modal-title">
+          <h2 id="modalTeamName">팀 이름</h2>
+          <div class="modal-value" id="modalValue">예상 팀 가치: 약 1조 ~ 3조 BP</div>
+        </div>
+      </div>
+      <div class="pitch-container">
+        <!-- Players injected by JS -->
+      </div>
+    </div>
+  </div>
+
   <script src="data.js"></script>
   <script src="script.js"></script>
 </body>

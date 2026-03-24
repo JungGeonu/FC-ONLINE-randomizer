@@ -21,6 +21,15 @@ const historyList    = document.getElementById('historyList');
 const totalTeamsEl   = document.getElementById('totalTeams');
 const filteredTeamsEl = document.getElementById('filteredTeams');
 
+// Modal DOM
+const squadModal     = document.getElementById('squadModal');
+const modalClose     = document.getElementById('modalClose');
+const modalLogo      = document.getElementById('modalLogo');
+const modalEmblem    = document.getElementById('modalEmblem');
+const modalTeamName  = document.getElementById('modalTeamName');
+const modalValue     = document.getElementById('modalValue');
+const pitchContainer = document.querySelector('.pitch-container');
+
 // ── Init ────────────────────────────────────────
 function init() {
   renderBgParticles();
@@ -32,6 +41,11 @@ function init() {
   updateStats();
   renderHistory();
   document.getElementById('clearHistory').addEventListener('click', clearHistory);
+  
+  modalClose.addEventListener('click', closeSquadModal);
+  squadModal.addEventListener('click', (e) => {
+    if(e.target === squadModal) closeSquadModal();
+  });
 }
 
 // ── Background Particles ────────────────────────
@@ -235,7 +249,74 @@ function createCard(team, league, idx) {
     </div>
   `;
 
+  // Make card clickable
+  div.style.cursor = 'pointer';
+  div.addEventListener('click', () => openSquadModal(team));
+
   return div;
+}
+
+// ── Squad Modal ─────────────────────────────────
+const FORMATION_4231 = [
+  { pos: 'ST', x: 50, y: 15 },
+  { pos: 'LAM', x: 25, y: 30 },
+  { pos: 'CAM', x: 50, y: 35 },
+  { pos: 'RAM', x: 75, y: 30 },
+  { pos: 'LDM', x: 35, y: 55 },
+  { pos: 'RDM', x: 65, y: 55 },
+  { pos: 'LB', x: 15, y: 75 },
+  { pos: 'LCB', x: 35, y: 80 },
+  { pos: 'RCB', x: 65, y: 80 },
+  { pos: 'RB', x: 85, y: 75 },
+  { pos: 'GK', x: 50, y: 92 },
+];
+
+function openSquadModal(team) {
+  modalTeamName.textContent = team.name;
+  
+  // Random realistic BP value based on tier
+  let bpBase = Math.floor(Math.random() * 4000) + 1000; // 1000 ~ 5000
+  if(team.tier === 'S') bpBase += 3000;
+  if(team.tier === 'A') bpBase += 1500;
+  modalValue.textContent = `예상 팀 가치: 약 ${(bpBase / 1000).toFixed(1)}조 BP`;
+
+  // Load logo
+  modalLogo.style.display = 'block';
+  modalEmblem.style.display = 'none';
+  modalLogo.src = `img/logos/${team.id}.png`;
+  modalLogo.onerror = () => {
+    modalLogo.style.display = 'none';
+    modalEmblem.style.display = 'block';
+    modalEmblem.textContent = team.emblem;
+  };
+
+  renderFormation(team);
+  squadModal.classList.add('active');
+}
+
+function closeSquadModal() {
+  squadModal.classList.remove('active');
+}
+
+function renderFormation(team) {
+  pitchContainer.innerHTML = '';
+  FORMATION_4231.forEach(p => {
+    const node = document.createElement('div');
+    node.className = 'player-node';
+    node.style.left = `${p.x}%`;
+    node.style.top = `${p.y}%`;
+    
+    // Check if keeper
+    const isGk = p.pos === 'GK';
+    const bg = isGk ? '#ffeb3b' : team.primary;
+    const border = isGk ? '#f57f17' : (team.secondary === '#FFFFFF' ? '#e0e0e0' : team.secondary);
+
+    node.innerHTML = `
+      <div class="player-dot" style="background:${bg}; border-color:${border};"></div>
+      <div class="player-pos">${p.pos}</div>
+    `;
+    pitchContainer.appendChild(node);
+  });
 }
 
 
