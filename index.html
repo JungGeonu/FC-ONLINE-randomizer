@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FC Online 팀 랜덤 생성기</title>
+  <meta name="description" content="FC Online 팀을 랜덤으로 뽑아주는 프로그램. 리그별 필터로 원하는 리그에서 랜덤 팀을 선택하세요." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Background particles -->
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="logo">
+        <div class="logo-icon">⚽</div>
+        <div class="logo-text">
+          <span class="logo-title">FC Online</span>
+          <span class="logo-sub">팀 랜덤 생성기</span>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-item">
+          <span class="stat-value" id="totalTeams">0</span>
+          <span class="stat-label">전체 팀</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value" id="filteredTeams">0</span>
+          <span class="stat-label">선택 가능</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-container">
+
+    <!-- Control Panel -->
+    <section class="control-panel">
+
+      <!-- League Filter -->
+      <div class="panel-section">
+        <div class="section-header">
+          <h2 class="section-title">🏆 리그 선택</h2>
+          <div class="section-actions">
+            <button class="text-btn" id="selectAllLeagues">전체 선택</button>
+            <span class="sep">|</span>
+            <button class="text-btn" id="deselectAllLeagues">전체 해제</button>
+          </div>
+        </div>
+        <div class="league-grid" id="leagueGrid">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Tier Filter -->
+      <div class="panel-section">
+        <div class="section-header">
+          <h2 class="section-title">⭐ 티어 필터</h2>
+          <div class="section-actions">
+            <button class="text-btn" id="selectAllTiers">전체 선택</button>
+            <span class="sep">|</span>
+            <button class="text-btn" id="deselectAllTiers">전체 해제</button>
+          </div>
+        </div>
+        <div class="tier-row" id="tierRow">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+
+      <!-- Count Selector & Draw Button -->
+      <div class="panel-section draw-section">
+        <div class="count-selector">
+          <span class="count-label">뽑을 팀 수</span>
+          <div class="count-buttons">
+            <button class="count-btn active" data-count="1" id="count1">1팀</button>
+            <button class="count-btn" data-count="2" id="count2">2팀</button>
+            <button class="count-btn" data-count="3" id="count3">3팀</button>
+            <button class="count-btn" data-count="4" id="count4">4팀</button>
+            <button class="count-btn" data-count="5" id="count5">5팀</button>
+          </div>
+        </div>
+        <button class="draw-btn" id="drawBtn">
+          <span class="draw-btn-icon">🎲</span>
+          <span class="draw-btn-text">랜덤 뽑기</span>
+        </button>
+      </div>
+
+    </section>
+
+    <!-- Results Area -->
+    <section class="results-section" id="resultsSection">
+      <div class="results-placeholder" id="resultsPlaceholder">
+        <div class="placeholder-icon">⚽</div>
+        <p>리그를 선택하고 <strong>랜덤 뽑기</strong>를 눌러보세요!</p>
+        <p class="placeholder-sub">FC Online에서 운영할 팀을 랜덤으로 골라드립니다</p>
+      </div>
+      <div class="results-grid" id="resultsGrid" style="display:none;">
+        <!-- Team cards go here -->
+      </div>
+    </section>
+
+    <!-- History Section -->
+    <section class="history-section" id="historySection" style="display:none;">
+      <div class="section-header">
+        <h2 class="section-title">📋 뽑기 히스토리</h2>
+        <button class="text-btn danger" id="clearHistory">초기화</button>
+      </div>
+      <div class="history-list" id="historyList"></div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <p>FC Online 팀 랜덤 생성기 &nbsp;·&nbsp; 직접 만든 비공식 도구</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
