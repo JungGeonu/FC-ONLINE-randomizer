@@ -304,6 +304,13 @@ body {
   position: relative; z-index: 1;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
 }
+.front-logo {
+  height: 60px;
+  width: auto; max-width: 80%;
+  object-fit: contain;
+  position: relative; z-index: 1;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));
+}
 
 /* Card body */
 .card-body {

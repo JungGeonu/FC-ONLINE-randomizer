@@ -225,7 +225,7 @@ function createCard(team, league, idx) {
       <div class="card-face card-front">
         <div class="card-banner" style="background: linear-gradient(135deg, ${team.primary}cc, ${team.secondary}55);">
           <div class="card-banner-glow" style="background: ${team.primary};"></div>
-          <span class="card-emblem">${team.emblem}</span>
+          <img src="img/logos/${team.id}.png" class="front-logo" alt="logo" onerror="this.outerHTML='<span class=\\'card-emblem\\'>${team.emblem}</span>'">
         </div>
         <div class="card-body">
           <div>
@@ -322,8 +322,18 @@ function renderFormation(team) {
         <div class="pcard-season">${p.season}</div>
         <div class="pcard-mipe">
           <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMax meet">
-            <path d="M50 20 C35 20 25 35 30 50 C32 56 38 62 50 62 C62 62 68 56 70 50 C75 35 65 20 50 20 Z" fill="#e0e0e0"/>
-            <path d="M15 100 C15 75 30 65 50 65 C70 65 85 75 85 100 Z" fill="${bg}"/>
+            <!-- Shadow -->
+            <path d="M50 15 C33 15 22 35 25 55 C27 65 35 70 50 70 C65 70 73 65 75 55 C78 35 67 15 50 15 Z" fill="rgba(0,0,0,0.4)" transform="translate(0,2)"/>
+            <path d="M10 105 C10 80 25 65 50 65 C75 65 90 80 90 105 Z" fill="rgba(0,0,0,0.4)" transform="translate(0,2)"/>
+            
+            <!-- Head & Neck -->
+            <path d="M50 15 C33 15 22 35 25 55 C27 65 35 70 50 70 C65 70 73 65 75 55 C78 35 67 15 50 15 Z" fill="#d4d4d4"/>
+            <path d="M40 65 L40 75 L60 75 L60 65 Z" fill="#b0b0b0"/>
+            
+            <!-- Torso / Uniform -->
+            <path d="M50 68 C35 68 20 75 10 105 L90 105 C80 75 65 68 50 68 Z" fill="${bg}"/>
+            <!-- Collar trim -->
+            <path d="M40 68 C45 75 55 75 60 68 L55 72 L45 72 Z" fill="${border}"/>
           </svg>
         </div>
         <div class="pcard-enhance enhance-${p.enhance}">+${p.enhance}</div>
