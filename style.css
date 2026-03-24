@@ -342,26 +342,30 @@ body {
   box-shadow: 0 1px 4px rgba(0,0,0,0.4);
 }
 
-/* Reroll button */
+/* Recommendation text */
 .card-footer {
   background: var(--bg-card);
   border-top: 1px solid var(--border);
-  padding: 10px 16px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
-.reroll-btn {
-  width: 100%;
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+.rec-item {
+  font-size: 0.75rem;
   color: var(--text-2);
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem; font-weight: 600;
-  padding: 6px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.3;
 }
-.reroll-btn:hover { background: rgba(0,230,118,0.08); border-color: var(--accent); color: var(--accent); }
+.rec-item b {
+  color: var(--text-1);
+  font-weight: 700;
+}
+.rec-icon {
+  font-size: 0.9rem;
+}
 
 /* Card entering animation */
 @keyframes cardAppear {

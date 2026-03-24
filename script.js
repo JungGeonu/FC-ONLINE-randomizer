@@ -227,42 +227,18 @@ function createCard(team, league, idx) {
             <div class="color-dot" style="background:${team.secondary};" title="${team.secondary}"></div>
           </div>
         </div>
-        <div class="card-footer">
-          <button class="reroll-btn" data-team-id="${team.id}">🔄 다시 뽑기</button>
+        <div class="card-footer rec-footer">
+          <div class="rec-item"><span class="rec-icon">👕</span> 미페: <b>구단 컬러</b> 유니폼 통일</div>
+          <div class="rec-item"><span class="rec-icon">✨</span> 시즌: <b>최신/고평가</b> 카드 위주 조합</div>
         </div>
       </div>
     </div>
   `;
 
-  div.querySelector('.reroll-btn').addEventListener('click', () => rerollCard(div, idx));
   return div;
 }
 
-// ── Reroll Single Card ──────────────────────────
-function rerollCard(cardEl, idx) {
-  const pool = getFilteredPool();
-  if (pool.length === 0) return;
 
-  // Gather currently showing team ids to avoid exact same team (best effort)
-  const currentIds = [...resultsGrid.querySelectorAll('.reroll-btn')]
-    .map(b => parseInt(b.dataset.teamId, 10))
-    .filter(id => !isNaN(id));
-
-  const availablePool = pool.filter(t => !currentIds.includes(t.id));
-  const drawPool = availablePool.length > 0 ? availablePool : pool;
-
-  const newTeam = drawPool[Math.floor(Math.random() * drawPool.length)];
-  const league = LEAGUES.find(l => l.id === newTeam.league);
-
-  // Flip back
-  cardEl.classList.remove('flipped');
-  setTimeout(() => {
-    const newCard = createCard(newTeam, league, idx);
-    newCard.style.animationDelay = '0ms';
-    resultsGrid.replaceChild(newCard, cardEl);
-    setTimeout(() => newCard.classList.add('flipped'), 200);
-  }, 350);
-}
 
 // ── History ─────────────────────────────────────
 function saveHistory(teams) {
